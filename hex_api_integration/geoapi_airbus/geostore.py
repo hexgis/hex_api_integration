@@ -75,19 +75,19 @@ class Api:
         self,
         bbox=[],
         constellation=[],
-        acquisitionDates=[],
-        polarisationChannels=[],
-        productType=[],
+        acquisition_date_range=[],
+        polarisation_channels=[],
+        product_type=[],
         resolution=None,
         geometry=None,
-        cloudCover=None,
-        snowCover=None,
-        incidenceAngle=None,
-        sensorType=None,
-        antennaLookDirection=None,
-        orbitDirection=None,
+        cloud_cover=None,
+        snow_cover=None,
+        incidence_angle=None,
+        sensor_type=None,
+        antenna_look_direction=None,
+        orbit_direction=None,
         count=20,
-        startPage=1,
+        start_page=1,
     ):
         """
         Payload data object with user parameters
@@ -95,20 +95,20 @@ class Api:
         Arguments:
             * bbox (list): list containing bbox data
             * constellation (list): list of constellation
-            * acquisitionDates (list): acquisition dates
-            * polarisationChannels (list): list of polarisation channels
-            * productType (list): list of product types
+            * acquisition_date_range (list): acquisition dates
+            * polarisation_channels (list): list of polarisation channels
+            * product_type (list): list of product types
             * geometry (list): WKT Geometry. Bbox and geometry
                 could not be equals.
             * resolution (list): maximum resolution filter
-            * cloudCover (list): maximum cloud cover
-            * snowCover (list):  maximum snow cover
-            * incidenceAngle (list): list of image incidence angle
-            * sensorType (list): list of sensors
-            * antennaLookDirection (list): list of antenna look direction
-            * orbitDirection (list): list of orbit direction
+            * cloud_cover (list): maximum cloud cover
+            * snow_cover (list):  maximum snow cover
+            * incidence_angle (list): list of image incidence angle
+            * sensor_type (list): list of sensors
+            * antenna_look_direction (list): list of antenna look direction
+            * orbit_direction (list): list of orbit direction
             * count (int): data count per request
-            * startPage (int): which data response page will start
+            * start_page (int): which data response page will start
 
         Returns:
             * payload (object): json object containing payload data
@@ -127,43 +127,43 @@ class Api:
         if constellation:
             payload["constellation"] = constellation
 
-        if acquisitionDates:
-            dates = self.__get_dates(acquisitionDates)
+        if acquisition_date_range:
+            dates = self.__get_dates(acquisition_date_range)
             payload["acquisitionDate"] = dates
 
-        if polarisationChannels:
-            payload["polarisationChannels"] = polarisationChannels
+        if polarisation_channels:
+            payload["polarisationChannels"] = polarisation_channels
 
-        if productType:
-            payload["productType"] = productType
+        if product_type:
+            payload["productType"] = product_type
 
         if resolution:
             payload["resolution"] = self.__get_less_than_or_equals(resolution)
 
-        if cloudCover:
-            payload["cloudCover"] = self.__get_less_than_or_equals(cloudCover)
+        if cloud_cover:
+            payload["cloudCover"] = self.__get_less_than_or_equals(cloud_cover)
 
-        if snowCover:
-            payload["snowCover"] = self.__get_less_than_or_equals(snowCover)
+        if snow_cover:
+            payload["snowCover"] = self.__get_less_than_or_equals(snow_cover)
 
-        if incidenceAngle:
-            incidenceAngle = self.__get_less_than_or_equals(incidenceAngle)
-            payload["incidenceAngle"] = incidenceAngle
+        if incidence_angle:
+            incidence_angle = self.__get_less_than_or_equals(incidence_angle)
+            payload["incidenceAngle"] = incidence_angle
 
-        if sensorType:
-            payload["sensorType"] = sensorType
+        if sensor_type:
+            payload["sensorType"] = sensor_type
 
-        if antennaLookDirection:
-            payload["antennaLookDirection"] = antennaLookDirection
+        if antenna_look_direction:
+            payload["antennaLookDirection"] = antenna_look_direction
 
-        if orbitDirection:
-            payload["orbitDirection"] = orbitDirection
+        if orbit_direction:
+            payload["orbitDirection"] = orbit_direction
 
         if count:
             payload["count"] = count
 
-        if startPage:
-            payload["startPage"] = startPage
+        if start_page:
+            payload["startPage"] = start_page
 
         return payload
 

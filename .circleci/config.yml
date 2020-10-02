@@ -1,0 +1,34 @@
+version: 2.0
+
+jobs:
+  build-and-test:
+    docker:
+    - image: hexgis/python-webgis:3.6.10
+    steps:
+    - checkout
+    - restore_cache:
+        key: deps-{{ .Branch }}-{{ checksum "requirements_dev.txt" }}
+    - run:
+        name: Creating venv and install packages
+        command: |
+          python3 -m venv app_env
+          . app_env/bin/activate
+          python setup.py develop
+    - save_cache:
+        key: deps-{{ .Branch }}-{{ checksum "requirements_dev.txt" }}
+        paths:
+          - app_env
+    - run:
+        name: Running tests for apps
+        command: |
+          . app_env/bin/activate
+          python3 setup.py test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only: master

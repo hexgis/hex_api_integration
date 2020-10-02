@@ -98,7 +98,7 @@ def test_get_payload_default_data(geo_api):
 
 def test_get_payload_data_parameter(geo_api):
     """Tests get payload dict method for GeoAPI with parameter data"""
-    payload = geo_api.get_payload(sensorType="TEST")
+    payload = geo_api.get_payload(sensor_type="TEST")
     assert payload
     assert type(payload) == dict
     assert payload.get("sensorType") == "TEST"
@@ -108,9 +108,9 @@ def test_get_response_data_parameter(geo_api, geom):
     """Tests get response data method for GeoAPI"""
     payload = geo_api.get_payload(
         geometry=geom,
-        acquisitionDates=["2020-01-01", "2020-02-01"],
+        acquisition_date_range=["2020-01-01", "2020-02-01"],
         constellation=["SPOT"],
-        cloudCover=10,
+        cloud_cover=10,
     )
     assert payload
     assert type(payload) == dict
@@ -173,9 +173,9 @@ def test_get_response_data_image_path_feature(geo_api, geom):
     """
     payload = geo_api.get_payload(
         geometry=geom,
-        acquisitionDates=["2020-01-01", "2020-02-01"],
+        acquisition_date_range=["2020-01-01", "2020-02-01"],
         constellation=["PLEIADES"],
-        cloudCover=10,
+        cloud_cover=10,
     )
     assert payload
     assert type(payload) == dict

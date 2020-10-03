@@ -22,7 +22,7 @@ jobs:
         name: Running tests for apps
         command: |
           . app_env/bin/activate
-          python3 setup.py test
+          python setup.py test
 
 workflows:
   version: 2

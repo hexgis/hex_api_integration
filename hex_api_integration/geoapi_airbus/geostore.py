@@ -59,8 +59,19 @@ class Api:
     def __get_less_than_or_equals(self, data):
         return "{}[".format(data)
 
-    def __get_sort_keys(self):
-        return "sortKeys=acquisitionDate,,0"
+    def __get_sort_keys(self, sort_key):
+        key = "acquisitionDate"
+        order = "1"
+        if sort_key and len(sort_key):
+            if sort_key[0] == "-":
+                order = "0"
+                sort_key = sort_key[1:]
+            if sort_key == "date":
+                key = "acquisitionDate"
+            elif sort_key == "cloud_rate":
+                key = "cloudCover"
+
+        return "{},,{}".format(key, order)
 
     def get_geostore_url(self):
         """
@@ -88,6 +99,7 @@ class Api:
         orbit_direction=None,
         count=20,
         start_page=1,
+        sort_key='-date',
     ):
         """
         Payload data object with user parameters
@@ -116,7 +128,7 @@ class Api:
         payload = {}
         payload["count"] = count
         payload["startPage"] = 1
-        payload["sortKeys"] = self.__get_sort_keys()
+        payload["sortKeys"] = self.__get_sort_keys(sort_key)
 
         if geometry:
             payload["geometry"] = geometry

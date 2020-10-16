@@ -93,7 +93,7 @@ def test_get_payload_default_data(geo_api):
     payload = geo_api.get_payload()
     assert payload
     assert type(payload) == dict
-    assert payload.get("sortKeys") == "sortKeys=acquisitionDate,,0"
+    assert payload.get("sortKeys") == "acquisitionDate,,0"
 
 
 def test_get_payload_data_parameter(geo_api):

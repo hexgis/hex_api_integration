@@ -59,7 +59,7 @@ class Api:
     def __get_less_than_or_equals(self, data):
         return "{}[".format(data)
 
-    def __get_sort_keys(self, sort_key):
+    def __get_sort_keys(self, sort_key="-date"):
         key = "acquisitionDate"
         order = "1"
         if sort_key and len(sort_key):

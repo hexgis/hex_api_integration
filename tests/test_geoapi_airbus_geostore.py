@@ -50,22 +50,6 @@ def preview_url():
         "?size=LARGE"
 
 
-def test_get_headers(geo_api):
-    """Tests get headers private method for GeoAPI"""
-    headers = geo_api._Api__get_authenticated_headers()
-    assert headers
-    assert headers.get("Authorization")
-
-
-def test_get_dates(geo_api):
-    """Tests get dates private method for GeoAPI"""
-    dates = "2018-01-01", "2018-02-01"
-    dates = geo_api._Api__get_dates(dates)
-    assert dates
-    assert type(dates) == str
-    assert dates == "[2018-01-01,2018-02-01["
-
-
 def test_get_sort_keys(geo_api):
     """Tests get sort keys private method for GeoAPI"""
     sort_keys = geo_api._Api__get_sort_keys()
@@ -73,17 +57,9 @@ def test_get_sort_keys(geo_api):
     assert type(sort_keys) == str
 
 
-def test_get_coverage(geo_api):
-    """Tests get coverage str private method for GeoAPI"""
-    coverage = geo_api._Api__get_less_than_or_equals(10)
-    assert coverage
-    assert type(coverage) == str
-    assert coverage == "10["
-
-
 def test_get_geostore_url(geo_api):
     """Tests get geostore url private method for GeoAPI"""
-    geostore_url = geo_api.get_geostore_url()
+    geostore_url = geo_api.get_api_url()
     assert geostore_url
     assert type(geostore_url) == str
 

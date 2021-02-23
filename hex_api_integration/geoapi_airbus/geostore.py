@@ -3,61 +3,10 @@ import json
 import requests
 import tempfile
 
-from .auth import Authentication
+from .api import AbstractApi
 
 
-class Api:
-
-    def __init__(self, api_key):
-        """
-        Api class for GeoStore from airbus
-
-        Arguments:
-            * api_key (str): api_key created from
-                https://account.foundation.oneatlas.airbus.com/
-        """
-        super(Api, self).__init__()
-        self.api_key = api_key
-        self.auth = Authentication(api_key)
-        self.auth.get_token()
-
-        if not self.auth.errors:
-            self.token = self.auth.token
-        else:
-            raise ValueError(str(self.auth.errors))
-
-    def __get_authenticated_headers(self):
-        """
-        Authenticated headers for requests with Authorization 'Token Bearer'
-
-        Returns:
-            * header (object): authorization header with bearer token
-        """
-        return {
-            'Authorization': "Bearer {}".format(self.token),
-            'Content-Type': "application/json",
-            'Cache-Control': "no-cache",
-        }
-
-    def __get_authenticated_headers_image(self):
-        """
-        Authenticated headers for requests with Authorization 'Token Bearer'
-        For Image requests without Content-Type attribute
-
-        Returns:
-            * header (object): authorization header with bearer token
-        """
-
-        return {
-            'Authorization': "Bearer {}".format(self.token),
-            'Cache-Control': "no-cache"
-        }
-
-    def __get_dates(self, date_list):
-        return "[{},{}[".format(*date_list)
-
-    def __get_less_than_or_equals(self, data):
-        return "{}[".format(data)
+class Api(AbstractApi):
 
     def __get_sort_keys(self, sort_key="-date"):
         key = "acquisitionDate"
@@ -73,7 +22,7 @@ class Api:
 
         return "{},,{}".format(key, order)
 
-    def get_geostore_url(self):
+    def get_api_url(self):
         """
         Void method to get url for geostore API search
 
@@ -140,7 +89,7 @@ class Api:
             payload["constellation"] = constellation
 
         if acquisition_date_range:
-            dates = self.__get_dates(acquisition_date_range)
+            dates = self._get_included_values(acquisition_date_range)
             payload["acquisitionDate"] = dates
 
         if polarisation_channels:
@@ -150,16 +99,16 @@ class Api:
             payload["productType"] = product_type
 
         if resolution:
-            payload["resolution"] = self.__get_less_than_or_equals(resolution)
+            payload["resolution"] = self._get_less_than_or_equals(resolution)
 
         if cloud_cover:
-            payload["cloudCover"] = self.__get_less_than_or_equals(cloud_cover)
+            payload["cloudCover"] = self._get_less_than_or_equals(cloud_cover)
 
         if snow_cover:
-            payload["snowCover"] = self.__get_less_than_or_equals(snow_cover)
+            payload["snowCover"] = self._get_less_than_or_equals(snow_cover)
 
         if incidence_angle:
-            incidence_angle = self.__get_less_than_or_equals(incidence_angle)
+            incidence_angle = self._get_less_than_or_equals(incidence_angle)
             payload["incidenceAngle"] = incidence_angle
 
         if sensor_type:
@@ -184,8 +133,8 @@ class Api:
         *Get data from geostore url*
 
         Requests data from GeoStore API using authentication from
-        geoapi_airbus.Authentication. Uses filters from payload data requesting
-        data and returning requests response data
+        geoapi_airbus.Authentication. Uses filters from payload data request
+        returning requests response object
 
         Arguments:
             * payload (dict): payload data for filtered request
@@ -194,10 +143,10 @@ class Api:
             * response (requests.response): a requests response data
         """
 
-        headers = self.__get_authenticated_headers()
+        headers = self._get_authenticated_headers()
         payload = json.dumps(payload)
         response = requests.post(
-            self.get_geostore_url(),
+            self.get_api_url(),
             data=payload,
             headers=headers
         )
@@ -220,7 +169,7 @@ class Api:
             * response (requests.response): a requests response data
         """
 
-        headers = self.__get_authenticated_headers_image()
+        headers = self._get_authenticated_headers_image()
         payload = {"size": img_size}
         response = requests.get(
             preview_url,

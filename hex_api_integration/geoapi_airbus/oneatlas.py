@@ -1,5 +1,7 @@
+import os
 import json
 import requests
+import tempfile
 
 from .api import AbstractApi
 
@@ -156,5 +158,69 @@ class Api(AbstractApi):
 
         if response.ok:
             return response
+
+        return None
+
+    def get_image_data(self, preview_url):
+        """
+        *Get image data blob from feature image_url*
+
+        Arguments:
+            * preview_url (str): preview url for request
+
+        Returns:
+            * response (requests.response): a requests response data
+        """
+
+        headers = self._get_authenticated_headers_image()
+        response = requests.get(
+            preview_url,
+            headers=headers,
+        )
+
+        if response and response.ok:
+            return response
+
+        return None
+
+    def get_image_path(
+        self,
+        feature=None,
+        preview_url=None,
+    ):
+        """
+        *Get image path from feature image_url or preview_url*
+
+        Arguments:
+            * feature (dict): geojson feature data
+            * preview_url (str): preview url data
+
+        Returns:
+            * path (str): path to image
+        """
+
+        error_msg = "Both feature and preview_url is not allowed"
+
+        if feature and preview_url:
+            raise ValueError(error_msg)
+
+        if feature:
+            preview_url = feature.get("_links").get("thumbnail")
+            preview_url = preview_url.get("href")
+
+        response = self.get_image_data(preview_url=preview_url)
+
+        if response and response.ok:
+            temp_path = os.path.join(
+                tempfile._get_default_tempdir(),
+                next(tempfile._get_candidate_names()) + ".jpg"
+            )
+            try:
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
+                    f.close()
+                return temp_path
+            except Exception as exc:
+                raise ValueError("Error while writing image: {}".format(exc))
 
         return None

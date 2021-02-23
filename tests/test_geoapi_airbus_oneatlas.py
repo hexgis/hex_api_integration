@@ -146,7 +146,4 @@ def test_get_response_data_image_path_feature(geo_api, bbox):
     )
     assert data
     assert thumbs
-    print("\n\n")
-    print(thumbs)
-    print("\n\n")
     assert response.status_code == 200

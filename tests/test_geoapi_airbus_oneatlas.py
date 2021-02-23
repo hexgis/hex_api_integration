@@ -23,18 +23,13 @@ def geo_api():
 
 
 @pytest.fixture
-def geom():
+def bbox():
     """
-    Geometry fixture data.
+    Bbox fixture data.
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    return "POLYGON ((" \
-        " -170.859375 -78.49055166160312," \
-        " 191.25 -78.49055166160312," \
-        " 191.25 84.86578186731522," \
-        " -170.859375 84.86578186731522," \
-        " -170.859375 -78.49055166160312))"
+    return [-100.10742, -28.14950, 15.20507, 5.26600]
 
 
 @pytest.fixture
@@ -44,10 +39,8 @@ def preview_url():
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    return "https://search.federated.geoapi-airbusds.com/" \
-        "api/v1/productTypes/SPOTArchive1.5Mono/products/" \
-        "DS_SPOT7_201801070929101_CB1_CB1_CB1_CB1_W021S78_01627" \
-        "?size=LARGE"
+    return "https://access.foundation.api.oneatlas.airbus.com/api/" \
+        "v1/items/592f885d-39ee-499b-a447-4311f0b2db00/quicklook"
 
 
 def test_get_oneatlas_url(geo_api):
@@ -73,10 +66,10 @@ def test_get_payload_data_parameter(geo_api):
     assert payload.get("cloudCover") == '100['
 
 
-def test_get_response_data_parameter(geo_api, geom):
+def test_get_response_data_parameter(geo_api, bbox):
     """Tests get response data method for GeoAPI"""
     payload = geo_api.get_payload(
-        geometry=geom,
+        bbox=bbox,
         acquisition_date_range=["2020-01-01", "2020-02-01"],
         constellation=["SPOT"],
     )
@@ -84,78 +77,76 @@ def test_get_response_data_parameter(geo_api, geom):
     assert type(payload) == dict
     assert payload.get("acquisitionDate")
     assert payload.get("cloudCover") == '100['
-    # response = geo_api.get_response_data(payload)
-    # assert response
-    # assert response.status_code == 200
-    # data = response.json()
-    # assert data.get("totalResults")
-    # assert data.get("startIndex")
-    # assert data.get("itemsPerPage")
-    # assert data.get("features")
-    # assert data.get("itemsPerPage") == payload["count"]
+    response = geo_api.get_response_data(payload)
+    assert response
+    assert response.status_code == 200
+    data = response.json()
+    assert data.get("features")
+    assert data.get("totalResults")
+    assert data.get("itemsPerPage")
+    assert data.get("itemsPerPage") == payload["itemsPerPage"]
 
-#     features = data.get("features")
-#     for feature in features:
-#         assert feature.get("geometry")
-#         assert feature.get("_links")
-#         assert feature.get("_links").get("thumbnail")
-#         thumbnails = filter(
-#             lambda x: x.get("size") == "LARGE",
-#             feature.get("_links").get("thumbnail").get("href")
-#         )
-#         assert thumbnails
+    features = data.get("features")
+    for feature in features:
+        assert feature.get("geometry")
+        assert feature.get("_links")
+        assert feature.get("_links").get("thumbnail")
+        assert feature.get("_links").get("thumbnail").get("href")
 
 
-# def test_get_response_data_image_blob(geo_api, preview_url):
-#     """Tests get response image blob data method for GeoAPI"""
-#     thumbs = geo_api.get_image_data(preview_url)
-#     assert thumbs
+def test_get_response_data_image_blob(geo_api, preview_url):
+    """Tests get response image blob data method for GeoAPI"""
+    thumbs = geo_api.get_image_data(preview_url)
+    assert thumbs
 
-#     thumbs = geo_api.get_image_data(preview_url + "err")
-#     assert not thumbs
-
-
-# def test_get_response_data_image_path(geo_api, preview_url):
-#     """Tests get response image path method for GeoAPI"""
-#     thumbs = geo_api.get_image_path(
-#         preview_url=preview_url
-#     )
-#     assert os.path.exists(thumbs)
-
-#     thumbs = geo_api.get_image_path(
-#         preview_url=preview_url + "test"
-#     )
-#     assert not thumbs
+    thumbs = geo_api.get_image_data(preview_url + "err")
+    assert not thumbs
 
 
-# def test_get_response_data_image_path_error(geo_api, preview_url):
-#     """Tests get response image path for GeoAPI with ValueError"""
-#     with pytest.raises(ValueError):
-#         geo_api.get_image_path(
-#             feature=True,
-#             preview_url=preview_url
-#         )
+def test_get_response_data_image_path(geo_api, preview_url):
+    """Tests get response image path method for GeoAPI"""
+    thumbs = geo_api.get_image_path(
+        preview_url=preview_url
+    )
+    assert os.path.exists(thumbs)
+
+    thumbs = geo_api.get_image_path(
+        preview_url=preview_url + "test"
+    )
+    assert not thumbs
 
 
-# def test_get_response_data_image_path_feature(geo_api, geom):
-#     """
-#     Tests get response image path for GeoAPI with path from feature
-#     """
-#     payload = geo_api.get_payload(
-#         geometry=geom,
-#         acquisition_date_range=["2020-01-01", "2020-02-01"],
-#         constellation=["PLEIADES"],
-#         cloud_cover=10,
-#     )
-#     assert payload
-#     assert type(payload) == dict
-#     assert payload.get("acquisitionDate")
+def test_get_response_data_image_path_error(geo_api, preview_url):
+    """Tests get response image path for GeoAPI with ValueError"""
+    with pytest.raises(ValueError):
+        geo_api.get_image_path(
+            feature=True,
+            preview_url=preview_url
+        )
 
-#     response = geo_api.get_response_data(payload)
-#     data = response.json()
-#     thumbs = geo_api.get_image_path(
-#         feature=data.get("features")[0]
-#     )
-#     assert data
-#     assert thumbs
-#     assert response.status_code == 200
+
+def test_get_response_data_image_path_feature(geo_api, bbox):
+    """
+    Tests get response image path for GeoAPI with path from feature
+    """
+    payload = geo_api.get_payload(
+        bbox=bbox,
+        acquisition_date_range=["2020-01-01", "2020-02-01"],
+        constellation=["PHR"],
+        cloud_cover=10,
+    )
+    assert payload
+    assert type(payload) == dict
+    assert payload.get("acquisitionDate")
+
+    response = geo_api.get_response_data(payload)
+    data = response.json()
+    thumbs = geo_api.get_image_path(
+        feature=data.get("features")[0]
+    )
+    assert data
+    assert thumbs
+    print("\n\n")
+    print(thumbs)
+    print("\n\n")
+    assert response.status_code == 200

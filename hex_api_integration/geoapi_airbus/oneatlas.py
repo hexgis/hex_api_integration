@@ -71,11 +71,14 @@ class Api(AbstractApi):
 
         payload = {}
         payload["itemsPerPage"] = count
-        payload["page"] = start_page
+        payload["startPage"] = start_page
         payload["sortBy"] = sort_key
 
         if bbox:
-            payload["bbox"] = ",".join(bbox)
+            if type(bbox) == list or type(bbox) == tuple:
+                payload["bbox"] = ",".join((str(point) for point in bbox))
+            else:
+                payload["bbox"] = bbox
 
         if geometry:
             payload["geometry"] = geometry
@@ -147,13 +150,9 @@ class Api(AbstractApi):
         response = requests.post(
             self.get_api_url(),
             data=payload,
-            headers=headers
+            headers=headers,
+            verify=False
         )
-        print("\n\n")
-        print(payload)
-        print(response.status_code)
-        print(response.json())
-        print("\n\n")
 
         if response.ok:
             return response

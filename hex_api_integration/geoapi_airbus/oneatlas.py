@@ -152,8 +152,7 @@ class Api(AbstractApi):
         response = requests.post(
             self.get_api_url(),
             data=payload,
-            headers=headers,
-            verify=False
+            headers=headers
         )
 
         if response.ok:

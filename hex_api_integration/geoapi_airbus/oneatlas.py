@@ -155,10 +155,7 @@ class Api(AbstractApi):
             headers=headers
         )
 
-        if response.ok:
-            return response
-
-        return None
+        return response
 
     def get_image_data(self, preview_url):
         """

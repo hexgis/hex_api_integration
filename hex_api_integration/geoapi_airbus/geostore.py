@@ -177,10 +177,7 @@ class Api(AbstractApi):
             params=json.dumps(payload)
         )
 
-        if response and response.ok:
-            return response
-
-        return None
+        return response
 
     def get_image_path(
         self,

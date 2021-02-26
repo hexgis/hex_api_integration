@@ -15,7 +15,7 @@ if os.getenv('TEST_API_KEY') is None:
 @pytest.fixture
 def geo_api():
     """
-    GeoAPI fixture data.
+    GeoAPI class from hex_api_integration.geoapi_airbus.oneatlas
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
@@ -41,6 +41,31 @@ def preview_url():
     """
     return "https://access.foundation.api.oneatlas.airbus.com/api/" \
         "v1/items/592f885d-39ee-499b-a447-4311f0b2db00/quicklook"
+
+
+@pytest.fixture
+def image_id():
+    """
+    AirBus image id fixture data.
+
+    See more at: http://doc.pytest.org/en/latest/fixture.html
+    """
+    return "255b3927-a391-4077-8de7-d4bb89773cc2"
+
+
+@pytest.fixture
+def zxy_path():
+    """
+    AirBus zxy image path for image_id 255b3927-a391-4077-8de7-d4bb89773cc2.
+
+    See more at: http://doc.pytest.org/en/latest/fixture.html
+    """
+    return (
+        (16, 24070, 35699),
+        (16, 24070, 35700),
+        (16, 24070, 35701),
+        (16, 24070, 35702),
+    )
 
 
 def test_get_oneatlas_url(geo_api):
@@ -70,8 +95,8 @@ def test_get_response_data_parameter(geo_api, bbox):
     """Tests get response data method for GeoAPI"""
     payload = geo_api.get_payload(
         bbox=bbox,
-        acquisition_date_range=["2020-01-01", "2020-02-01"],
-        constellation=["SPOT"],
+        acquisition_date_range=["2020-01-01", "2021-02-25"],
+        constellation=["PHR"],
     )
     assert payload
     assert type(payload) == dict
@@ -92,6 +117,7 @@ def test_get_response_data_parameter(geo_api, bbox):
         assert feature.get("_links")
         assert feature.get("_links").get("thumbnail")
         assert feature.get("_links").get("thumbnail").get("href")
+        assert feature.get("properties").get("processingLevel")
 
 
 def test_get_response_data_image_blob(geo_api, preview_url):
@@ -147,3 +173,12 @@ def test_get_response_data_image_path_feature(geo_api, bbox):
     assert data
     assert thumbs
     assert response.status_code == 200
+
+
+def test_get_response_data_image_path_wmts(geo_api, image_id, zxy_path):
+    """
+    Tests get response image path for GeoAPI with path from feature
+    """
+    for z, x, y in zxy_path:
+        image_data = geo_api.get_wmts_image_data(image_id, z, x, y)
+        assert image_data

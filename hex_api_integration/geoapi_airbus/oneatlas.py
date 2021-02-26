@@ -18,6 +18,14 @@ class Api(AbstractApi):
         return "https://search.foundation.api.oneatlas.airbus.com" \
             "/api/v1/opensearch"
 
+    def get_wmts_service_url(self, EPSG=3857):
+        """
+        Void method to get url for wmts service with default ESPG:3857
+        """
+        return 'https://access.foundation.api.oneatlas.airbus.com/api/' \
+            'v1/items/{id}/wmts/tiles/1.0.0/default/rgb/' \
+            'EPSG' + str(EPSG) + '/{z}/{x}/{y}.png'
+
     def get_payload(
         self,
         bbox=[],
@@ -134,7 +142,7 @@ class Api(AbstractApi):
 
     def get_response_data(self, payload):
         """
-        *Get data from api url*
+        Get data from api url
 
         Requests data from OneAtlas API using authentication from
         geoapi_airbus.Authentication. Uses filters from payload data request
@@ -159,7 +167,7 @@ class Api(AbstractApi):
 
     def get_image_data(self, preview_url):
         """
-        *Get image data blob from feature image_url*
+        Get image data blob from feature image_url
 
         Arguments:
             * preview_url (str): preview url for request
@@ -185,7 +193,7 @@ class Api(AbstractApi):
         preview_url=None,
     ):
         """
-        *Get image path from feature image_url or preview_url*
+        Get image path from feature image_url or preview_url
 
         Arguments:
             * feature (dict): geojson feature data
@@ -220,3 +228,21 @@ class Api(AbstractApi):
                 raise ValueError("Error while writing image: {}".format(exc))
 
         return None
+
+    def get_wmts_image_data(self, id, z, x, y):
+        """
+        Get wmts image data for each zxy request
+        Returns image content for grid system as requests.Response instance
+
+        Arguments:
+            * id (str): Airbus OneAtlas data id
+            * z (int): zoom level
+            * x (int): x position in grid
+            * y (int): y position in grid
+
+        Returns:
+            * response (requests.Response): response data
+        """
+        url = self.get_wmts_service_url()
+        url = url.format(id=id, z=str(z), x=str(x), y=str(y))
+        return self.get_image_data(url)

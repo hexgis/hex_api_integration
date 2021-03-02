@@ -44,7 +44,7 @@ class Api(AbstractApi):
         resolution=None,
         source_identifier=None,
         workspace=None,
-        processing_level=["SENSOR"],
+        processing_level=["SENSOR", "ALBUM"],
         count=20,
         start_page=1,
         sort_key='-acquisitionDate,cloudCover',

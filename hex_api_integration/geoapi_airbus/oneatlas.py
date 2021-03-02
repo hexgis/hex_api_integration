@@ -35,7 +35,7 @@ class Api(AbstractApi):
         cloud_cover=100,
         snow_cover=100,
         commercial_reference=None,
-        constellation=[],
+        constellation=["PHR", "SPOT"],
         incidence_angle=None,
         parent_idenfifier=None,
         platform=[],
@@ -44,6 +44,7 @@ class Api(AbstractApi):
         resolution=None,
         source_identifier=None,
         workspace=None,
+        processing_level=["SENSOR"],
         count=20,
         start_page=1,
         sort_key='-acquisitionDate,cloudCover',
@@ -69,8 +70,10 @@ class Api(AbstractApi):
             * publication_date_range (list): Publication date range.
             * resolution (list): max resolution filter.
             * snow_cover (float): max snow cover.
-            * source_identifier Nonetr): Product identifier.
+            * source_identifier (str): Product identifier.
             * workspace (str): Workspace id/name or workspace id/name list.
+            * processing_level (list): Processing Level.
+                E.g.: ["SENSOR", "ALBUM"]
             * count (int): items per page.
             * start_page (int): data response page that request will start.
             * sort_by (str): sortKeys. Default: '-acquisitionDate,cloudCover'
@@ -131,6 +134,9 @@ class Api(AbstractApi):
 
         if workspace:
             payload["workspace"] = workspace
+
+        if processing_level:
+            payload["processingLevel"] = ",".join(processing_level)
 
         if production_status:
             payload["productionStatus"] = ",".join(production_status)

@@ -175,6 +175,43 @@ def test_get_response_data_image_path_feature(geo_api, bbox):
     assert response.status_code == 200
 
 
+def test_get_response_for_filtered_data(geo_api, bbox):
+    """
+    Tests get response data for processingLevel filtered data
+    """
+    args = {
+        "bbox": bbox,
+        "acquisition_date_range": ["2020-01-01", "2020-02-01"],
+        "constellation": ["PHR"],
+        "cloud_cover": 10,
+    }
+
+    args["processing_level"] = ["ALBUM", "SENSOR"]
+    payload = geo_api.get_payload(**args)
+    response = geo_api.get_response_data(payload)
+    total_results = response.json().get("totalResults")
+    assert response.status_code == 200
+    assert total_results > 0
+
+    args["processing_level"] = ["SENSOR"]
+    payload = geo_api.get_payload(**args)
+    response = geo_api.get_response_data(payload)
+    sensor_results = response.json().get("totalResults")
+    assert response.status_code == 200
+    assert sensor_results > 0
+
+    args["processing_level"] = ["ALBUM"]
+    payload = geo_api.get_payload(**args)
+    response = geo_api.get_response_data(payload)
+    album_results = response.json().get("totalResults")
+    assert response.status_code == 200
+    assert album_results > 0
+
+    assert total_results > sensor_results
+    assert total_results > album_results
+    assert total_results == album_results + sensor_results
+
+
 def test_get_response_data_image_path_wmts(geo_api, image_id, zxy_path):
     """
     Tests get response image path for GeoAPI with path from feature

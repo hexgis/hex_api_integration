@@ -146,21 +146,47 @@ class Api():
         if len(data) > 0:
             if (data[0] == 'dummy record 0'):
                 data.pop(0)
-                for scene in data:
-                    scene = self._handle_scene_footprint(scene)
+            data = self._get_geojson_data(data)
 
         return data
 
+    def _get_geojson_data(
+        self,
+        data: list
+    ) -> dict:
+        geojson = {
+            'count': len(data),
+            'features': []
+        }
+
+        for scene in data:
+            feature = {
+                'coordinates': [
+                    self._handle_scene_footprint(
+                        scene['footprintlat'], scene['footprintlon'])
+                ],
+                'properties': {
+                    'identifier': scene['identifier'],
+                    'sensor': scene['sensor'],
+                    'date': scene['acquisitiontime'],
+                    'cloud_cover': scene['cloudcover'],
+                    'off_nadir': scene['offnadir'],
+                    'tiles': scene['tiles'],
+                }
+            }
+            geojson['features'].append(feature)
+
+        return geojson
+
     def _handle_scene_footprint(
         self,
-        scene: dict
+        footprintlat: list,
+        footprintlon: list
     ) -> dict:
-        footprint = zip(scene['footprintlat'], scene['footprintlon'])
-        scene['footprint'] = [[x, y] for x, y in footprint]
-        scene['footprint'].pop(0)
-        del scene['footprintlat']
-        del scene['footprintlon']
-        return scene
+        footprint = zip(footprintlat, footprintlon)
+        footprint = [[x, y] for x, y in footprint]
+        footprint.pop(0)
+        return footprint
 
     def get_image_data(self, preview_url, img_size='LARGE'):
         """

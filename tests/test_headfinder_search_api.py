@@ -74,10 +74,14 @@ def test_get_response_data_parameter(search_api, geom):
     assert type(payload) == dict
     assert payload.get('aoi')
     data = search_api.get_response_data(payload)
+
     assert data
-    assert len(data)
-    assert data[0].get('identifier')
-    assert data[0].get('footprint')
+    assert data.get('features')
+    assert len(data['features'])
+    assert data['features'][0].get('coordinates')
+    assert len(data['features'][0]['coordinates'])
+    assert data['features'][0].get('properties')
+    assert data['features'][0]['properties'].get('identifier')
 
 
 # def test_get_response_data_image_blob(search_api, preview_url):

@@ -33,6 +33,20 @@ def geom():
             '(43.028,-1.290)))')
 
 
+@pytest.fixture
+def bbox():
+    """Geometry fixture data.
+
+    See more at: http://doc.pytest.org/en/latest/fixture.html
+    """
+    return [
+        -48.277309693614235,
+        -16.047997768048294,
+        -47.296779908457985,
+        -15.51277906427387
+    ]
+
+
 # @pytest.fixture
 # def preview_url():
 #     """
@@ -61,10 +75,33 @@ def test_get_payload_data_parameter(search_api):
     assert payload.get('scenename') == 'TEST'
 
 
-def test_get_response_data_parameter(search_api, geom):
+def test_get_response_data_parameter_geom(search_api, geom):
     """Tests get response data method for SearchAPI"""
     payload = search_api.get_payload(
         geometry=geom,
+        start_date='2020-07-15',
+        end_date='2020-08-01',
+        max_scenes=2,
+        satellites=['SuperView', 'EarthScanner-KF1'],
+    )
+    assert payload
+    assert type(payload) == dict
+    assert payload.get('aoi')
+    data = search_api.get_response_data(payload)
+
+    assert data
+    assert data.get('features')
+    assert len(data['features'])
+    assert data['features'][0].get('coordinates')
+    assert len(data['features'][0]['coordinates'])
+    assert data['features'][0].get('properties')
+    assert data['features'][0]['properties'].get('identifier')
+
+
+def test_get_response_data_parameter_bbox(search_api, bbox):
+    """Tests get response data method for SearchAPI"""
+    payload = search_api.get_payload(
+        bbox=bbox,
         start_date='2020-07-15',
         end_date='2020-08-01',
         max_scenes=2,

@@ -73,11 +73,14 @@ class Api():
         if geometry:
             payload['aoi'] = geometry
         elif bbox:
-            payload['aoi'] = 'rectangle(({},{})({},{}))'.format(*bbox)
+            payload['aoi'] = \
+                f'rectangle(({bbox[1]},{bbox[0]}),({bbox[3]},{bbox[2]}))'
 
         if satellites:
             satellites = '$'.join(satellites)
             payload['satellites'] = f'${satellites}$'
+        else:
+            satellites = '$SuperView$EarthScanner-KF1$'
 
         if scene_name:
             payload['scenename'] = scene_name

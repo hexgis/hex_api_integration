@@ -132,64 +132,8 @@ class Api():
         )
 
         if response.ok:
-            if (response.text == 'bad request'):
-                raise AttributeError()
-            return self._handle_response_data(response.text)
-
-        return None
-
-    def _handle_response_data(
-        self,
-        data: str
-    ) -> dict:
-        data = data.split('&jsonscenelist=')[1]
-        data = data.split('&hits=')[0]
-        data = json.loads(data)
-
-        if len(data) > 0:
-            if (data[0] == 'dummy record 0'):
-                data.pop(0)
-            data = self._get_geojson_data(data)
-
-        return data
-
-    def _get_geojson_data(
-        self,
-        data: list
-    ) -> dict:
-        geojson = {
-            'count': len(data),
-            'features': []
-        }
-
-        for scene in data:
-            feature = {
-                'coordinates': [
-                    self._handle_scene_footprint(
-                        scene['footprintlat'], scene['footprintlon'])
-                ],
-                'properties': {
-                    'identifier': scene['identifier'],
-                    'sensor': scene['sensor'],
-                    'date': scene['acquisitiontime'],
-                    'cloud_cover': scene['cloudcover'],
-                    'off_nadir': scene['offnadir'],
-                    'tiles': scene['tiles'],
-                }
-            }
-            geojson['features'].append(feature)
-
-        return geojson
-
-    def _handle_scene_footprint(
-        self,
-        footprintlat: list,
-        footprintlon: list
-    ) -> dict:
-        footprint = zip(footprintlat, footprintlon)
-        footprint = [[x, y] for x, y in footprint]
-        footprint.pop(0)
-        return footprint
+            return response
+        response.raise_for_status()
 
     def get_image_data(self, preview_url, img_size='LARGE'):
         """

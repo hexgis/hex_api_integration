@@ -87,15 +87,16 @@ def test_get_response_data_parameter_geom(search_api, geom):
     assert payload
     assert type(payload) == dict
     assert payload.get('aoi')
-    data = search_api.get_response_data(payload)
+    response = search_api.get_response_data(payload)
 
-    assert data
-    assert data.get('features')
-    assert len(data['features'])
-    assert data['features'][0].get('coordinates')
-    assert len(data['features'][0]['coordinates'])
-    assert data['features'][0].get('properties')
-    assert data['features'][0]['properties'].get('identifier')
+    assert response
+    assert response.text
+    assert len(response.text) > 0
+    assert '&jsonscenelist=' in response.text
+    data = response.text.split('&jsonscenelist=')[1]
+    data = data.split('&hits=')[0]
+    assert len(data)
+    assert data != '[]'
 
 
 def test_get_response_data_parameter_bbox(search_api, bbox):
@@ -110,15 +111,16 @@ def test_get_response_data_parameter_bbox(search_api, bbox):
     assert payload
     assert type(payload) == dict
     assert payload.get('aoi')
-    data = search_api.get_response_data(payload)
+    response = search_api.get_response_data(payload)
 
-    assert data
-    assert data.get('features')
-    assert len(data['features'])
-    assert data['features'][0].get('coordinates')
-    assert len(data['features'][0]['coordinates'])
-    assert data['features'][0].get('properties')
-    assert data['features'][0]['properties'].get('identifier')
+    assert response
+    assert response.text
+    assert len(response.text) > 0
+    assert '&jsonscenelist=' in response.text
+    data = response.text.split('&jsonscenelist=')[1]
+    data = data.split('&hits=')[0]
+    assert len(data)
+    assert data != '[]'
 
 
 # def test_get_response_data_image_blob(search_api, preview_url):

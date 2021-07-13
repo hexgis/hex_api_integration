@@ -15,7 +15,7 @@ class Api():
         """
         self.user_key = user_key
 
-    def get_api_url(self) -> str:
+    def get_search_api_url(self) -> str:
         """Get HEADFinder Search API URL.
 
         Returns:
@@ -23,13 +23,21 @@ class Api():
         """
         return 'https://headfinder.head-aerospace.eu/search-ext-01/'
 
+    def get_preview_api_url(self) -> str:
+        """Get HEADFinder Preview API URL.
+
+        Returns:
+            str: HEADFinder Preview API URL
+        """
+        return 'https://headfinder.head-aerospace.eu/api-01/'
+
     def get_payload(
         self,
         bbox: list = None,
         geometry: list = None,
         satellites: list = None,
-        scene_name: str = None,
-        scene_name_exact_match: bool = True,
+        scene_id: str = None,
+        scene_id_exact_match: bool = True,
         max_scenes: int = 50,
         start_date: str = None,
         end_date: str = None,
@@ -45,9 +53,9 @@ class Api():
                 AOI in WKT polygon format. Defaults to None.
             satellites (list, optional):
                 List of HEAD satellites. Defaults to None.
-            scene_name (str, optional):
+            scene_id (str, optional):
                 Scene name. Defaults to None.
-            scene_name_exact_match (bool, optional):
+            scene_id_exact_match (bool, optional):
                 Match name exactly if true, partially if false.
                 Defaults to True.
             max_scenes (int, optional):
@@ -82,10 +90,10 @@ class Api():
         else:
             satellites = '$SuperView$EarthScanner-KF1$'
 
-        if scene_name:
-            payload['scenename'] = scene_name
+        if scene_id:
+            payload['scenename'] = scene_id
 
-        if scene_name_exact_match:
+        if scene_id_exact_match is None or scene_id_exact_match is True:
             payload['scenenamematch'] = 'exact'
         else:
             payload['scenenamematch'] = 'partial'
@@ -112,7 +120,7 @@ class Api():
     def get_response_data(
         self,
         payload: dict
-    ) -> dict:
+    ) -> 'requests.Response':
         """Get data from search api url.
 
         Requests data from HEADFinder Search API.
@@ -127,7 +135,7 @@ class Api():
         """
         payload = urllib.parse.urlencode(payload, safe=',$()')
         response = requests.get(
-            self.get_api_url(),
+            self.get_search_api_url(),
             params=payload
         )
 
@@ -135,76 +143,103 @@ class Api():
             return response
         response.raise_for_status()
 
-    def get_image_data(self, preview_url, img_size='LARGE'):
-        """
-        *Get image data blob from feature image_url*
+    def get_image_payload(self,
+        scene_id: str = '',
+        img_quality: str = 'max'
+    ) -> dict:
+        """Get scene preview request params payload
 
-        Arguments:
-            * preview_url (str): preview url for request
-            * img_size (str): image size.
-                Could be: 'SMALL', 'MEDIUM', 'LARGE'
+        Args:
+            scene_id (str, optional): scene ID. Defaults to ''.
+            img_quality (str, optional): image quality, either low, std or max.
+                Defaults to 'max'.
 
         Returns:
-            * response (requests.response): a requests response data
+            dict: payload data
         """
+        payload = {}
+        payload['req'] = 'd01'
+        payload['category'] = 'getpreview-01'
+        payload['user'] = self.user_key
+        payload['imgformat'] = 'png'
+        payload['scenenamematch'] = 'exact'
 
-        headers = self._get_authenticated_headers_image()
-        payload = {'size': img_size}
+        if scene_id:
+            payload['scenename'] = scene_id
+
+        if img_quality:
+            payload['imgquality'] = img_quality
+
+        return payload
+
+    def get_image_data(
+        self,
+        payload: dict
+    ) -> 'requests.Response':
+        """Get image data blob for specified scene id
+
+        Args:
+            payload (dict): payload data containing scene ID
+
+        Returns:
+            requests.Response: response data containing image in PNG format
+        """
         response = requests.get(
-            preview_url,
-            headers=headers,
-            params=json.dumps(payload)
+            self.get_preview_api_url(),
+            params=payload
         )
 
-        return response
+        if response.ok:
+            return response
+        response.raise_for_status()
 
-    def get_image_path(
-        self,
-        feature=None,
-        preview_url=None,
-        img_size='LARGE'
-    ):
-        """
-        *Get image path from feature image_url or preview_url*
+    # def get_image_path(
+    #     self,
+    #     feature=None,
+    #     preview_url=None,
+    #     img_size='LARGE'
+    # ):
+    #     """
+    #     *Get image path from feature image_url or preview_url*
 
-        Arguments:
-            * feature (dict): geojson feature data
-            * preview_url (str): preview url data
-            * img_size (str): image size.
-                Could be: 'SMALL', 'MEDIUM', 'LARGE'
+    #     Arguments:
+    #         * feature (dict): geojson feature data
+    #         * preview_url (str): preview url data
+    #         * img_size (str): image size.
+    #             Could be: 'SMALL', 'MEDIUM', 'LARGE'
 
-        Returns:
-            * path (str): path to image
-        """
+    #     Returns:
+    #         * path (str): path to image
+    #     """
 
-        error_msg = 'Both feature and preview_url is not allowed'
+    #     error_msg = 'Both feature and preview_url is not allowed'
 
-        if feature and preview_url:
-            raise ValueError(error_msg)
+    #     if feature and preview_url:
+    #         raise ValueError(error_msg)
 
-        if feature:
-            thumbnails = filter(
-                lambda x: x.get('size') == img_size,
-                feature.get('quicklooks')
-            )
-            thumbnails = next(thumbnails).get('image')
-            response = self.get_image_data(
-                preview_url=thumbnails, img_size=img_size)
-        else:
-            response = self.get_image_data(
-                preview_url=preview_url, img_size=img_size)
+    #     if feature:
+    #         thumbnails = filter(
+    #             lambda x: x.get('size') == img_size,
+    #             feature.get('quicklooks')
+    #         )
+    #         thumbnails = next(thumbnails).get('image')
+    #         response = self.get_image_data(
+    #             preview_url=thumbnails, img_size=img_size)
+    #     else:
+    #         response = self.get_image_data(
+    #             preview_url=preview_url, img_size=img_size)
 
-        if response and response.ok:
-            temp_path = os.path.join(
-                tempfile._get_default_tempdir(),
-                next(tempfile._get_candidate_names()) + '.jpg'
-            )
-            try:
-                with open(temp_path, 'wb') as f:
-                    f.write(response.content)
-                    f.close()
-                return temp_path
-            except Exception as exc:
-                raise ValueError('Error while writing image: {}'.format(exc))
+    #     if response and response.ok:
+    #         temp_path = os.path.join(
+    #             tempfile._get_default_tempdir(),
+    #             next(tempfile._get_candidate_names()) + '.jpg'
+    #         )
+    #         try:
+    #             with open(temp_path, 'wb') as f:
+    #                 f.write(response.content)
+    #                 f.close()
+    #             return temp_path
+    #         except Exception as exc:
+    #             raise ValueError('Error while writing image: {}'.format(exc))
 
-        return None
+    #     return None

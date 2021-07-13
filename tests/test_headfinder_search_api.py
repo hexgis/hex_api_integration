@@ -47,29 +47,25 @@ def bbox():
     ]
 
 
-# @pytest.fixture
-# def preview_url():
-#     """
-#     Preview Url fixture data.
+@pytest.fixture
+def scene_id():
+    """
+    Scene ID fixture data.
 
-#     See more at: http://doc.pytest.org/en/latest/fixture.html
-#     """
-#     return 'https://search.federated.Search-airbusds.com/' \
-#         'api/v1/productTypes/SPOTArchive1.5Mono/products/' \
-#         'DS_SPOT7_201801070929101_CB1_CB1_CB1_CB1_W021S78_01627' \
-#         '?size=LARGE'
-
+    See more at: http://doc.pytest.org/en/latest/fixture.html
+    """
+    return 'SV-1-03_PMS_20200907_0_3283473'
 
 def test_get_search_api_url(search_api):
     """Tests get geostore url private method for SearchAPI"""
-    search_api_url = search_api.get_api_url()
+    search_api_url = search_api.get_search_api_url()
     assert search_api_url
     assert type(search_api_url) == str
 
 
 def test_get_payload_data_parameter(search_api):
     """Tests get payload dict method for SearchAPI with parameter data"""
-    payload = search_api.get_payload(scene_name='TEST')
+    payload = search_api.get_payload(scene_id='TEST')
     assert payload
     assert type(payload) == dict
     assert payload.get('scenename') == 'TEST'
@@ -123,13 +119,20 @@ def test_get_response_data_parameter_bbox(search_api, bbox):
     assert data != '[]'
 
 
-# def test_get_response_data_image_blob(search_api, preview_url):
-#     """Tests get response image blob data method for SearchAPI"""
-#     thumbs = search_api.get_image_data(preview_url)
-#     assert thumbs
+def test_get_image_payload(search_api, scene_id):
+    """Tests get image payload dict method for SearchAPI with parameter data"""
+    payload = search_api.get_image_payload(scene_id=scene_id)
+    assert payload
+    assert type(payload) == dict
+    assert payload.get('imgformat') == 'png'
 
-#     thumbs = search_api.get_image_data(preview_url + 'err')
-#     assert not thumbs
+
+def test_get_response_data_image_blob(search_api, scene_id):
+    """Tests get response image blob data method for SearchAPI"""
+    payload = search_api.get_image_payload(scene_id=scene_id)
+    preview = search_api.get_image_data(payload)
+    assert preview
+    assert preview.headers['Content-Type'] == 'image/png'
 
 
 # def test_get_response_data_image_path(search_api, preview_url):

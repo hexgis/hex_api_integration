@@ -127,7 +127,7 @@ class Api():
         Uses filters from payload data request
         and returns requests response object
 
-        Argus:
+        Args:
             payload (dict): payload data for filtered request
 
         Returns:
@@ -144,13 +144,13 @@ class Api():
         response.raise_for_status()
 
     def get_image_payload(self,
-        scene_id: str = '',
+        scene_id: str,
         img_quality: str = 'max'
     ) -> dict:
         """Get scene preview request params payload
 
         Args:
-            scene_id (str, optional): scene ID. Defaults to ''.
+            scene_id (str): scene ID.
             img_quality (str, optional): image quality, either low, std or max.
                 Defaults to 'max'.
 
@@ -192,54 +192,3 @@ class Api():
         if response.ok:
             return response
         response.raise_for_status()
-
-    # def get_image_path(
-    #     self,
-    #     feature=None,
-    #     preview_url=None,
-    #     img_size='LARGE'
-    # ):
-    #     """
-    #     *Get image path from feature image_url or preview_url*
-
-    #     Arguments:
-    #         * feature (dict): geojson feature data
-    #         * preview_url (str): preview url data
-    #         * img_size (str): image size.
-    #             Could be: 'SMALL', 'MEDIUM', 'LARGE'
-
-    #     Returns:
-    #         * path (str): path to image
-    #     """
-
-    #     error_msg = 'Both feature and preview_url is not allowed'
-
-    #     if feature and preview_url:
-    #         raise ValueError(error_msg)
-
-    #     if feature:
-    #         thumbnails = filter(
-    #             lambda x: x.get('size') == img_size,
-    #             feature.get('quicklooks')
-    #         )
-    #         thumbnails = next(thumbnails).get('image')
-    #         response = self.get_image_data(
-    #             preview_url=thumbnails, img_size=img_size)
-    #     else:
-    #         response = self.get_image_data(
-    #             preview_url=preview_url, img_size=img_size)
-
-    #     if response and response.ok:
-    #         temp_path = os.path.join(
-    #             tempfile._get_default_tempdir(),
-    #             next(tempfile._get_candidate_names()) + '.jpg'
-    #         )
-    #         try:
-    #             with open(temp_path, 'wb') as f:
-    #                 f.write(response.content)
-    #                 f.close()
-    #             return temp_path
-    #         except Exception as exc:
-    #             raise ValueError('Error while writing image: {}'.format(exc))
-
-    #     return None

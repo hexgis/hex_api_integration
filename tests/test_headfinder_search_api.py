@@ -121,7 +121,7 @@ def test_get_response_data_parameter_bbox(search_api, bbox):
 
 def test_get_image_payload(search_api, scene_id):
     """Tests get image payload dict method for SearchAPI with parameter data"""
-    payload = search_api.get_image_payload(scene_id=scene_id)
+    payload = search_api.get_image_payload(scene_id)
     assert payload
     assert type(payload) == dict
     assert payload.get('imgformat') == 'png'
@@ -129,7 +129,7 @@ def test_get_image_payload(search_api, scene_id):
 
 def test_get_response_data_image_blob(search_api, scene_id):
     """Tests get response image blob data method for SearchAPI"""
-    payload = search_api.get_image_payload(scene_id=scene_id)
+    payload = search_api.get_image_payload(scene_id)
     preview = search_api.get_image_data(payload)
     assert preview
     assert preview.headers['Content-Type'] == 'image/png'

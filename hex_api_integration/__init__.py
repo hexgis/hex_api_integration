@@ -2,4 +2,4 @@
 
 __author__ = """Hex Informatica LTDA"""
 __email__ = 'contato@hexgis.com'
-__version__ = '0.1.8'
+__version__ = '0.1.9'

@@ -141,3 +141,69 @@ class Authentication:
             return False
 
         return response.json()
+
+
+    def get_me(self) -> object:
+        """
+        **Geo API get me data**
+
+        Will get user info from api/vi/me
+
+        Returns:
+            *  (object): user information
+        """
+        if not self.token:
+            token = self.get_token()
+            if not token:
+                return False
+
+        url = "https://data.api.oneatlas.airbus.com/api/v1/me"
+        response = requests.get(url, headers=self.__get_auth_headers())
+
+        if response.status_code == 403:
+            return False
+
+        return response.json()
+
+    def get_contract_id(self) -> str:
+        user_info = self.get_me()
+
+        if (
+            not user_info
+            or not user_info["contract"]
+            or not user_info["contract"]["id"]
+        ):
+            return None
+
+        return user_info["contract"]["id"]
+
+    def __get_all_subscription_url(self, contract_id):
+        return (
+            f"https://data.api.oneatlas.airbus.com/api/v1/contracts"
+            f"/{contract_id}/subscriptions"
+        )
+
+    def get_all_subscriptions(self):
+        if not self.token:
+            token = self.get_token()
+            if not token:
+                return False
+
+        url = self.__get_all_subscription_url(self.get_contract_id())
+        response = requests.get(url, headers=self.__get_auth_headers())
+
+        if response.status_code == 403:
+            return False
+
+        return response.json()
+
+    def get_usage(self):
+        user_subscriptions = self.get_all_subscriptions()
+        subscriptions = user_subscriptions["items"]
+
+        if len(subscriptions):
+            for subscription in subscriptions:
+                if subscription["amountConsumed"] and subscription["amountMax"]:
+                    return [subscription["amountConsumed"], subscription["amountMax"]]
+
+        return [None, None]

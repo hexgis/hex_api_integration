@@ -1,9 +1,14 @@
 import os
 import json
+
+from django.http.response import JsonResponse
+from django.conf import settings
 import requests
 import tempfile
 
 from .api import AbstractApi
+
+settings.configure()
 
 
 class Api(AbstractApi):
@@ -252,3 +257,11 @@ class Api(AbstractApi):
         url = self.get_wmts_service_url()
         url = url.format(id=id, z=str(z), x=str(x), y=str(y))
         return self.get_image_data(url)
+
+    def get_data_usage(self):
+        [consumed_value, max_value] = self.auth.get_usage()
+
+        if consumed_value and max_value:
+            return JsonResponse({"consumed": consumed_value, "max": max_value})
+
+        return JsonResponse("There is no maximum amount or consumed amout", status=404)

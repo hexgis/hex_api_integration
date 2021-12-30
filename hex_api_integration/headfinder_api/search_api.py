@@ -1,7 +1,4 @@
-import os
-import json
 import requests
-import tempfile
 import urllib.parse
 
 
@@ -144,9 +141,9 @@ class Api():
         response.raise_for_status()
 
     def get_image_payload(self,
-        scene_id: str,
-        img_quality: str = 'max'
-    ) -> dict:
+                          scene_id: str,
+                          img_quality: str = 'max'
+                          ) -> dict:
         """Get scene preview request params payload
 
         Args:

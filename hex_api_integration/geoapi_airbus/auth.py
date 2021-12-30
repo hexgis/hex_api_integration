@@ -4,8 +4,7 @@ import requests
 class Authentication:
 
     def __init__(self, api_key):
-        """
-        Authentication class for geoapi from airbus
+        """Authentication class for geoapi from airbus.
 
         Arguments:
             * api_key (str): api_key created from
@@ -20,8 +19,7 @@ class Authentication:
         self.errors = None
 
     def __get_headers(self):
-        """
-        Headers for api requests with Content Type and Cache-Control data
+        """Headers for api requests with Content Type and Cache-Control data.
 
         Returns:
             * header (object): Content-Type and Cache-Control data
@@ -33,8 +31,7 @@ class Authentication:
         }
 
     def __get_auth_headers(self):
-        """
-        Authenticated headers for requests with Authorization 'Token Bearer'
+        """Authenticated headers for requests with JWT Authorization.
 
         Returns:
             * header (object): authorization header with bearer token
@@ -45,8 +42,7 @@ class Authentication:
         }
 
     def __get_data(self, api_key):
-        """
-        Data for requests with api_key data, grant_type and client_id
+        """Data for requests with api_key data, grant_type and client_id.
 
         Arguments:
             * api_key (bool): api_key created from
@@ -63,7 +59,7 @@ class Authentication:
         ]
 
     def __get_all_subscriptions_url(self, contract_id: str) -> str:
-        """Gets all subscriptions url of api service
+        """Gets all subscriptions url of api service.
 
         Args:
             contract_id (str): User's contract id
@@ -78,7 +74,7 @@ class Authentication:
 
     def get_token(self):
         """
-        **Geo API get authentication data**
+        **Geo API get authentication data.**
 
         Get token from Authentication.url data to token data
         Available on Authentication.token
@@ -104,7 +100,7 @@ class Authentication:
 
     def test_api_token(self):
         """
-        **Geo API get authentication data**
+        **Geo API get authentication data.**
 
         Will test user api token availability from openid-connect/token from
         auth/realms/IDP/protocol/openid-connect/token/auth/realms/IDP/protocol
@@ -132,7 +128,7 @@ class Authentication:
 
     def get_roles(self):
         """
-        **Geo API get roles data**
+        **Geo API get roles data.**
 
         Will get roles from api/vi/me/services available for user
 
@@ -158,7 +154,7 @@ class Authentication:
 
     def get_me(self) -> object:
         """
-        **Geo API get me data**
+        **Geo API get me data.**
 
         Will get user info from api/vi/me and returns its object
 
@@ -179,7 +175,7 @@ class Authentication:
         return response.json()
 
     def get_contract_id(self) -> str:
-        """Gets user contract id from user information object
+        """Gets user contract id from user information object.
 
         Returns:
             str: Returns the id
@@ -196,7 +192,7 @@ class Authentication:
         return user_info["contract"]["id"]
 
     def get_all_subscriptions(self) -> object:
-        """Gets all subscriptions of authenticated user
+        """Gets all subscriptions of authenticated user.
 
         Returns:
             object: an object with all listed subscriptions
@@ -215,10 +211,10 @@ class Authentication:
         return response.json()
 
     def get_usage(self) -> list:
-        """Gets user's data usage from the first subscription that has one
+        """Gets user's data usage from the first subscription that has one.
 
         Returns:
-            list: Returns either an list with nones or a list 
+            list: Returns either an list with nones or a list
                 with [<used amount>, <max_amount>]
         """
 
@@ -229,9 +225,9 @@ class Authentication:
             for subscription in subscriptions:
                 if subscription["amountConsumed"] and \
                    subscription["amountMax"]:
-                    return [
+                    return (
                         subscription["amountConsumed"],
                         subscription["amountMax"]
-                    ]
+                    )
 
         raise ValueError('There is no limited subscription for this user')

@@ -56,6 +56,7 @@ def scene_id():
     """
     return 'SV-1-03_PMS_20200907_0_3283473'
 
+
 def test_get_search_api_url(search_api):
     """Tests get geostore url private method for SearchAPI"""
     search_api_url = search_api.get_search_api_url()

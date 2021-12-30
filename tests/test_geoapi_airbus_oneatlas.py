@@ -5,6 +5,7 @@
 import os
 import pytest
 import sys
+import ast
 
 from hex_api_integration.geoapi_airbus.oneatlas import Api as GeoApi
 
@@ -221,4 +222,13 @@ def test_get_response_data_image_path_wmts(geo_api, image_id, zxy_path):
         assert image_data
 
 
-# def test_get_data_usage():
+def test_get_data_usage(geo_api):
+    """
+    Tests get response image path for GeoAPI with path from feature
+    """
+    response = geo_api.get_data_usage()
+    json_response = ast.literal_eval(response.content)
+
+    assert response.status_code == 200
+    assert json_response.get('consumed')
+    assert json_response.get('max')

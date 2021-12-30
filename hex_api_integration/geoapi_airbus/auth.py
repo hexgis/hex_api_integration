@@ -62,6 +62,20 @@ class Authentication:
             ('client_id', 'IDP'),
         ]
 
+    def __get_all_subscriptions_url(self, contract_id: str) -> str:
+        """Gets all subscriptions url of api service
+
+        Args:
+            contract_id (str): User's contract id
+
+        Returns:
+            str: Url formmated
+        """
+        return (
+            f"https://data.api.oneatlas.airbus.com/api/v1/contracts"
+            f"/{contract_id}/subscriptions"
+        )
+
     def get_token(self):
         """
         **Geo API get authentication data**
@@ -181,20 +195,6 @@ class Authentication:
 
         return user_info["contract"]["id"]
 
-    def __get_all_subscription_url(self, contract_id: str) -> str:
-        """Gets all subscriptions url of api service
-
-        Args:
-            contract_id (str): User's contract id
-
-        Returns:
-            str: Url formmated
-        """
-        return (
-            f"https://data.api.oneatlas.airbus.com/api/v1/contracts"
-            f"/{contract_id}/subscriptions"
-        )
-
     def get_all_subscriptions(self) -> object:
         """Gets all subscriptions of authenticated user
 
@@ -206,7 +206,7 @@ class Authentication:
             if not token:
                 return False
 
-        url = self.__get_all_subscription_url(self.get_contract_id())
+        url = self.__get_all_subscriptions_url(self.get_contract_id())
         response = requests.get(url, headers=self.__get_auth_headers())
 
         if response.status_code == 403:
@@ -227,7 +227,11 @@ class Authentication:
 
         if len(subscriptions):
             for subscription in subscriptions:
-                if subscription["amountConsumed"] and subscription["amountMax"]:
-                    return [subscription["amountConsumed"], subscription["amountMax"]]
+                if subscription["amountConsumed"] and \
+                   subscription["amountMax"]:
+                    return [
+                        subscription["amountConsumed"],
+                        subscription["amountMax"]
+                    ]
 
         return [None, None]

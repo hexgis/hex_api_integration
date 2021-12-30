@@ -258,7 +258,17 @@ class Api(AbstractApi):
         url = url.format(id=id, z=str(z), x=str(x), y=str(y))
         return self.get_image_data(url)
 
-    def get_data_usage(self):
+    def get_data_usage(self) -> JsonResponse:
+        """
+        Get amount of data used on all subscriptions
+
+        It mappes between all subcriptions and returns the first one that
+        has consumed amount and max amount of data in it.
+
+        Returns:
+            JsonResponse: Returns a JsonResponse with either the consumed
+                and max amount of a error message
+        """
         [consumed_value, max_value] = self.auth.get_usage()
 
         if consumed_value and max_value:

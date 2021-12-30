@@ -142,15 +142,14 @@ class Authentication:
 
         return response.json()
 
-
     def get_me(self) -> object:
         """
         **Geo API get me data**
 
-        Will get user info from api/vi/me
+        Will get user info from api/vi/me and returns its object
 
         Returns:
-            *  (object): user information
+            *  (object): user information as json
         """
         if not self.token:
             token = self.get_token()
@@ -166,6 +165,11 @@ class Authentication:
         return response.json()
 
     def get_contract_id(self) -> str:
+        """Gets user contract id from user information object
+
+        Returns:
+            str: Returns the id
+        """
         user_info = self.get_me()
 
         if (
@@ -177,13 +181,26 @@ class Authentication:
 
         return user_info["contract"]["id"]
 
-    def __get_all_subscription_url(self, contract_id):
+    def __get_all_subscription_url(self, contract_id: str) -> str:
+        """Gets all subscriptions url of api service
+
+        Args:
+            contract_id (str): User's contract id
+
+        Returns:
+            str: Url formmated
+        """
         return (
             f"https://data.api.oneatlas.airbus.com/api/v1/contracts"
             f"/{contract_id}/subscriptions"
         )
 
-    def get_all_subscriptions(self):
+    def get_all_subscriptions(self) -> object:
+        """Gets all subscriptions of authenticated user
+
+        Returns:
+            object: an object with all listed subscriptions
+        """
         if not self.token:
             token = self.get_token()
             if not token:
@@ -197,7 +214,14 @@ class Authentication:
 
         return response.json()
 
-    def get_usage(self):
+    def get_usage(self) -> list:
+        """Gets user's data usage from the first subscription that has one
+
+        Returns:
+            list: Returns either an list with nones or a list 
+                with [<used amount>, <max_amount>]
+        """
+
         user_subscriptions = self.get_all_subscriptions()
         subscriptions = user_subscriptions["items"]
 

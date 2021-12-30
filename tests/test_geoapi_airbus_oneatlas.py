@@ -219,3 +219,6 @@ def test_get_response_data_image_path_wmts(geo_api, image_id, zxy_path):
     for z, x, y in zxy_path:
         image_data = geo_api.get_wmts_image_data(image_id, z, x, y)
         assert image_data
+
+
+# def test_get_data_usage():

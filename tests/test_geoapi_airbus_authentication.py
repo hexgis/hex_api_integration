@@ -49,3 +49,11 @@ def test_api_get_roles(auth):
     assert new_auth.get_roles()
     assert new_auth.token
     assert not new_auth.errors
+
+# def test_api_get_me():
+
+# def test_api_get_contract_id():
+
+# def test_api_get_all_subscriptions():
+
+# def test_api_get_usage():

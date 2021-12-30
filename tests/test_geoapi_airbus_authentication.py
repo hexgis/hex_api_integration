@@ -51,7 +51,7 @@ def test_api_get_roles(auth):
     assert not new_auth.errors
 
 
-def test_api_get_me():
+def test_api_get_me(auth):
     """Tests authentication api_get_me method"""
     assert auth.get_me()
     new_auth = Authentication(os.getenv("TEST_AIRBUS_API_KEY"))
@@ -60,7 +60,7 @@ def test_api_get_me():
     assert not new_auth.errors
 
 
-def test_api_get_contract_id():
+def test_api_get_contract_id(auth):
     """Tests authentication api_get_contract_id method"""
     assert auth.get_contract_id()
     new_auth = Authentication(os.getenv("TEST_AIRBUS_API_KEY"))
@@ -69,7 +69,7 @@ def test_api_get_contract_id():
     assert not new_auth.errors
 
 
-def test_api_get_all_subscriptions():
+def test_api_get_all_subscriptions(auth):
     """Tests authentication api_get_all_subscriptions method"""
     assert auth.get_all_subscriptions()
     new_auth = Authentication(os.getenv("TEST_AIRBUS_API_KEY"))
@@ -78,7 +78,7 @@ def test_api_get_all_subscriptions():
     assert not new_auth.errors
 
 
-def test_api_get_usage():
+def test_api_get_usage(auth):
     """Tests authentication api_get_usage method"""
     assert auth.get_usage()
     new_auth = Authentication(os.getenv("TEST_AIRBUS_API_KEY"))

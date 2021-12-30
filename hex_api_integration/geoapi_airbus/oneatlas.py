@@ -272,4 +272,9 @@ class Api(AbstractApi):
         if consumed_value and max_value:
             return JsonResponse({"consumed": consumed_value, "max": max_value})
 
-        return JsonResponse("There is no maximum amount or consumed amout", status=404)
+        return JsonResponse(
+            {
+                'error': 'no_limited_subscriptions',
+                'error_description':
+                    'There is no limited subscription for this user'
+            }, status=404)

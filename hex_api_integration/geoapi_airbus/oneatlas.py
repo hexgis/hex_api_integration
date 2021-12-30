@@ -267,14 +267,15 @@ class Api(AbstractApi):
             JsonResponse: Returns a JsonResponse with either the consumed
                 and max amount of a error message
         """
-        [consumed_value, max_value] = self.auth.get_usage()
+        try:
+            [consumed_value, max_value] = self.auth.get_usage()
 
-        if consumed_value and max_value:
-            return JsonResponse({"consumed": consumed_value, "max": max_value})
+            if consumed_value and max_value:
+                return JsonResponse({"consumed": consumed_value, "max": max_value})
 
-        return JsonResponse(
-            {
-                'error': 'no_limited_subscriptions',
-                'error_description':
-                    'There is no limited subscription for this user'
-            }, status=404)
+        except ValueError as exc:
+            return JsonResponse(
+                {
+                    'error': 'no_limited_subscriptions',
+                    'error_description': str(exc)
+                }, status=404)

@@ -48,6 +48,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/hexgis/hex_api_integration',
-    version='0.1.9',
+    version='0.1.10',
     zip_safe=False,
 )

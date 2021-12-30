@@ -234,4 +234,4 @@ class Authentication:
                         subscription["amountMax"]
                     ]
 
-        return [None, None]
+        raise ValueError('There is no limited subscription for this user')

@@ -1,10 +1,8 @@
 import os
 import json
-
-from django.http.response import JsonResponse
-from django.conf import settings
 import requests
 import tempfile
+
 
 from .api import AbstractApi
 
@@ -256,7 +254,7 @@ class Api(AbstractApi):
         url = url.format(id=id, z=str(z), x=str(x), y=str(y))
         return self.get_image_data(url)
 
-    def get_data_usage(self) -> JsonResponse:
+    def get_data_usage(self) -> requests.models.Response:
         """
         Get amount of data used on all subscriptions
 
@@ -264,18 +262,24 @@ class Api(AbstractApi):
         has consumed amount and max amount of data in it.
 
         Returns:
-            JsonResponse: Returns a JsonResponse with either the consumed
+            requests.models.Response: Returns data with either the consumed
                 and max amount of a error message
         """
+
+        response = requests.models.Response()
+
         try:
-            [consumed_value, max_value] = self.auth.get_usage()
+            consumed_value, max_value = self.auth.get_usage()
+            data = {'consumed': consumed_value, 'max': max_value}
 
-            if consumed_value and max_value:
-                return JsonResponse({"consumed": consumed_value, "max": max_value})
+            response.status_code = 200
+            response._content = json.dumps(data).encode('utf-8')
+        except Exception as exc:
+            data = {
+                'error': 'no_limited_subscriptions',
+                'error_description': str(exc)
+            }
+            response.status_code = 404
+            response._content = json.dumps(data).encode('utf-8')
 
-        except ValueError as exc:
-            return JsonResponse(
-                {
-                    'error': 'no_limited_subscriptions',
-                    'error_description': str(exc)
-                }, status=404)
+        return response

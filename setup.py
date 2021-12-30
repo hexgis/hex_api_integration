@@ -10,7 +10,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Django>=2.2', 'requests>=2.24.0',]
+requirements = ['Django>=2.2', 'requests>=2.24.0', ]
 
 setup_requirements = ['pytest-runner', ]
 

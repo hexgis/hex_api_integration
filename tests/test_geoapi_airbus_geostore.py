@@ -8,8 +8,8 @@ import sys
 
 from hex_api_integration.geoapi_airbus.geostore import Api as GeoApi
 
-if os.getenv('TEST_API_KEY') is None:
-    sys.exit("Please define env TEST_API_KEY for testing")
+if os.getenv('TEST_AIRBUS_API_KEY') is None:
+    sys.exit("Please define env TEST_AIRBUS_API_KEY for testing")
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def geo_api():
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    return GeoApi(os.getenv("TEST_API_KEY"))
+    return GeoApi(os.getenv("TEST_AIRBUS_API_KEY"))
 
 
 @pytest.fixture

@@ -8,8 +8,8 @@ import sys
 
 from hex_api_integration.geoapi_airbus.oneatlas import Api as GeoApi
 
-if os.getenv('TEST_API_KEY') is None:
-    sys.exit("Please define env TEST_API_KEY for testing")
+if os.getenv('TEST_AIRBUS_API_KEY') is None:
+    sys.exit("Please define env TEST_AIRBUS_API_KEY for testing")
 
 
 @pytest.fixture
@@ -19,7 +19,7 @@ def geo_api():
 
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
-    return GeoApi(os.getenv("TEST_API_KEY"))
+    return GeoApi(os.getenv("TEST_AIRBUS_API_KEY"))
 
 
 @pytest.fixture
@@ -219,3 +219,13 @@ def test_get_response_data_image_path_wmts(geo_api, image_id, zxy_path):
     for z, x, y in zxy_path:
         image_data = geo_api.get_wmts_image_data(image_id, z, x, y)
         assert image_data
+
+
+def test_get_data_usage(geo_api):
+    """
+    Tests get response image path for GeoAPI with path from feature
+    """
+    response = geo_api.get_data_usage()
+    assert response.status_code == 200
+    assert response.json().get('consumed')
+    assert response.json().get('max')

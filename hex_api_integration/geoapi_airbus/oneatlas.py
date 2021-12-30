@@ -3,6 +3,7 @@ import json
 import requests
 import tempfile
 
+
 from .api import AbstractApi
 
 
@@ -252,3 +253,33 @@ class Api(AbstractApi):
         url = self.get_wmts_service_url()
         url = url.format(id=id, z=str(z), x=str(x), y=str(y))
         return self.get_image_data(url)
+
+    def get_data_usage(self) -> requests.models.Response:
+        """
+        Get amount of data used on all subscriptions
+
+        It mappes between all subcriptions and returns the first one that
+        has consumed amount and max amount of data in it.
+
+        Returns:
+            requests.models.Response: Returns data with either the consumed
+                and max amount of a error message
+        """
+
+        response = requests.models.Response()
+
+        try:
+            consumed_value, max_value = self.auth.get_usage()
+            data = {'consumed': consumed_value, 'max': max_value}
+
+            response.status_code = 200
+            response._content = json.dumps(data).encode('utf-8')
+        except Exception as exc:
+            data = {
+                'error': 'no_limited_subscriptions',
+                'error_description': str(exc)
+            }
+            response.status_code = 404
+            response._content = json.dumps(data).encode('utf-8')
+
+        return response

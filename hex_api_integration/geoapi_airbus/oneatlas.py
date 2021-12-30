@@ -8,8 +8,6 @@ import tempfile
 
 from .api import AbstractApi
 
-settings.configure()
-
 
 class Api(AbstractApi):
 

@@ -1,3 +1,5 @@
+import requests
+
 from . import api
 
 
@@ -35,3 +37,33 @@ class Api(api.AbstractApi):
         """
 
         return self.get_default_api_url() + uri
+
+    def get_cis_contract_ids(self) -> list:
+        """Gets cis contract ids from /api/v1/me endpoint.
+
+        Returns:
+            list: cis contract ids list.
+        """
+
+        contracts = self.auth.get_cis_contracts()
+
+        if contracts['contracts']:
+            return [ct.get('contractId') for ct in contracts['contracts']]
+
+        return False
+
+    def get_tasking_from_contracts_ids(self) -> dict:
+        data = {}
+        tasking_url = self.get_tasking_api_url()
+        headers = self._get_authenticated_headers()
+
+        for contract in self.get_cis_contract_ids():
+            data[contract] = []
+            response = requests.get(
+                tasking_url.format(cisContractId=contract),
+                headers=headers,
+            )
+            if response and response.ok():
+                data[contract].append(response.json())
+
+        return data

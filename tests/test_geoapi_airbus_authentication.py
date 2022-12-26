@@ -93,3 +93,11 @@ def test_api_get_usage(auth):
     assert new_auth.get_usage()
     assert new_auth.token
     assert not new_auth.errors
+
+
+def test_api_get_contracts(auth):
+    """Tests authentication api_get_contracst method."""
+
+    contracts = auth.get_cis_contracts()
+    assert contracts
+    assert len(contracts) > 0

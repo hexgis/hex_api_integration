@@ -37,6 +37,9 @@ def test_get_cis_contracts_ids(geo_api):
     assert len(cis_contract_ids) > 0
 
 
-# def test_get_taskings(geo_api):
-#     """Tests get cis contract ids method for GeoAPI."""
-#     usage = geo_api.get_tasking_from_contracts_ids()
+def test_get_taskings(geo_api):
+    """Tests get taskings method for GeoAPI."""
+
+    taskings = geo_api.get_taskings_from_contract_ids()
+    assert taskings
+    # TO-DO: implements taskings validation.

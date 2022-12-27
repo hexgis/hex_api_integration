@@ -52,8 +52,14 @@ class Api(api.AbstractApi):
 
         return False
 
-    def get_tasking_from_contracts_ids(self) -> dict:
+    def get_taskings_from_contract_ids(self) -> dict:
+        """Get tasking list from contract ids.
+
+        Returns:
+            dict: contracts with list of taskings.
+        """
         data = {}
+
         tasking_url = self.get_tasking_api_url()
         headers = self._get_authenticated_headers()
 

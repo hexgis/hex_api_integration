@@ -20,17 +20,18 @@ class Api(api.AbstractApi):
             str: Airbus default api url.
         """
 
-        return 'https://search.foundation.api.oneatlas.airbus.com'
+        # return 'https://search.foundation.api.oneatlas.airbus.com'
+        return 'https://order.api.oneatlas.airbus.com'
 
     def get_tasking_api_url(
         self,
-        uri: str = '/api/v1/{cisContractId}/taskings'
+        uri: str = '/api/v1/contracts/{cisContractId}/taskings'
     ) -> str:
         """Gets url for OneAtlas Tasking API search.
 
         Args:
             uri (str, optional): endpoint uri.
-                Defaults to '/api/v1/{cisContractId}/taskings'.
+                Defaults to '/api/v1/contracts/{cisContractId}/taskings'.
 
         Returns:
             str: api tasking url.

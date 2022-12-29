@@ -52,8 +52,11 @@ class Api(api.AbstractApi):
 
         return False
 
-    def get_taskings_from_contract_ids(self) -> dict:
+    def get_taskings_from_contract_ids(self, quiet: bool = False) -> dict:
         """Get tasking list from contract ids.
+
+        Args:
+            quiet (bool, optional): show logs on prompt. Default is False.
 
         Returns:
             dict: contracts with list of taskings.
@@ -65,11 +68,20 @@ class Api(api.AbstractApi):
 
         for contract in self.get_cis_contract_ids():
             data[contract] = []
-            response = requests.get(
-                tasking_url.format(cisContractId=contract),
-                headers=headers,
-            )
+            url = tasking_url.format(cisContractId=contract)
+
+            if not quiet:
+                print(
+                    f'\nGetting contracts info for {contract}'
+                    f'\nURL: {response.url}, \nHeaders:{headers}'
+                )
+
+            response = requests.get(url, headers=headers)
+
             if response and response.ok():
+                if not quiet:
+                    print(f'\nResponse: {response.json()}')
+
                 data[contract].append(response.json())
 
         return data

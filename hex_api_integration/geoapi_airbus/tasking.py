@@ -73,7 +73,7 @@ class Api(api.AbstractApi):
             if not quiet:
                 print(
                     f'\nGetting contracts info for {contract}'
-                    f'\nURL: {response.url}, \nHeaders:{headers}'
+                    f'\nURL: {url}, \nHeaders:{headers}'
                 )
 
             response = requests.get(url, headers=headers)

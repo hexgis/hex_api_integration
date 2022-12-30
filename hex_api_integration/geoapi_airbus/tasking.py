@@ -96,7 +96,7 @@ class Api(api.AbstractApi):
 
         return response
 
-    def get_taskings_from_contract_ids(self) -> dict:
+    def get_taskings_from_contract_ids(self, quiet: bool = True) -> dict:
         """Get tasking list from contract ids.
 
         Args:
@@ -114,9 +114,18 @@ class Api(api.AbstractApi):
             data[contract] = []
             url = tasking_url.format(cisContractId=contract)
 
+            if not quiet:
+                print(
+                    f'\nGetting contracts info for {contract}'
+                    f'\nURL: {url}\nHeaders:{headers}'
+                )
+
             response = requests.get(url, headers=headers)
 
             if response and response.ok:
+                if not quiet:
+                    print(f'\nResponse: {response.json()}')
+
                 data[contract].append(response.json())
 
         return data

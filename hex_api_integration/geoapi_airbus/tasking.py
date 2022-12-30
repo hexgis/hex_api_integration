@@ -25,7 +25,7 @@ class Api(api.AbstractApi):
 
     def get_tasking_api_url(
         self,
-        uri: str = '/api/v1/contracts/{cisContractId}/taskings/'
+        uri: str = '/api/v1/contracts/{cisContractId}/taskings'
     ) -> str:
         """Gets url for OneAtlas Tasking API search.
 

@@ -121,6 +121,7 @@ class Api(api.AbstractApi):
                 )
 
             response = requests.get(url, headers=headers)
+            response.raise_for_status()
 
             if response and response.ok:
                 if not quiet:

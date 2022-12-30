@@ -25,13 +25,32 @@ class Api(api.AbstractApi):
 
     def get_tasking_api_url(
         self,
-        uri: str = '/api/v1/contracts/{cisContractId}/taskings'
+        uri: str = '/api/v1/contracts/{cisContractId}/taskings/'
     ) -> str:
         """Gets url for OneAtlas Tasking API search.
 
         Args:
             uri (str, optional): endpoint uri.
                 Defaults to '/api/v1/contracts/{cisContractId}/taskings'.
+
+        Returns:
+            str: api tasking url.
+        """
+
+        return self.get_default_api_url() + uri
+
+    def get_tasking_cancel_api_url(
+        self,
+        uri: str = (
+            '/api/v1/contracts/{cisContractId}/taskings/{taskingId}/cancel'
+        )
+    ) -> str:
+        """Gets url for OneAtlas Tasking API cancel.
+
+        Args:
+            uri (str, optional): endpoint uri.
+                Defaults to '/api/v1/contracts
+                            /{cisContractId}/taskings/{taskingId}/cancel'.
 
         Returns:
             str: api tasking url.
@@ -53,11 +72,35 @@ class Api(api.AbstractApi):
 
         return False
 
-    def get_taskings_from_contract_ids(self, quiet: bool = False) -> dict:
+    def cancel_tasking(
+        self,
+        contract_id: str,
+        tasking_id: str
+    ) -> requests.Response:
+        """Cancel OneAtlas Tasking for Contract and Tasking Id's. 
+
+        Args:
+            contract_id (str): OneAtlas cisContractId.
+            tasking_id (str): OneAtlas taskingId.
+
+        Returns:
+            requests.Response: response model data.
+        """
+        url = self.get_tasking_cancel_api_url()
+        url = url.format(cisContractId=contract_id, taskingId=tasking_id)
+
+        headers = self._get_authenticated_headers()
+        response = requests.post(url, headers=headers)
+
+        response.raise_for_status()
+
+        return response
+
+    def get_taskings_from_contract_ids(self) -> dict:
         """Get tasking list from contract ids.
 
         Args:
-            quiet (bool, optional): show logs on prompt. Default is False.
+            quiet (bool, optional): show logs on prompt. Default is True.
 
         Returns:
             dict: contracts with list of taskings.
@@ -71,18 +114,9 @@ class Api(api.AbstractApi):
             data[contract] = []
             url = tasking_url.format(cisContractId=contract)
 
-            if not quiet:
-                print(
-                    f'\nGetting contracts info for {contract}'
-                    f'\nURL: {url}\nHeaders:{headers}'
-                )
-
             response = requests.get(url, headers=headers)
 
             if response and response.ok:
-                if not quiet:
-                    print(f'\nResponse: {response.json()}')
-
                 data[contract].append(response.json())
 
         return data
